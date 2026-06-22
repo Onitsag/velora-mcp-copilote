@@ -1,0 +1,47 @@
+{
+  "name": "velora-mcp-copilote",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "POC Learning Lab M2DFS — Serveur MCP + agent compatible OpenAI pour le copilote conseiller de Velora (e-commerce fictif).",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:setup": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts",
+    "server:dev": "tsx src/server.ts",
+    "agent": "npm run build && tsx src/agent/cli.ts",
+    "demo": "npm run build && tsx scripts/demo.ts",
+    "showcase": "npm run build && tsx scripts/showcase.ts",
+    "smoke": "npm run build && tsx scripts/smoke.ts",
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector node dist/server.js",
+    "pretest": "npm run db:setup && npm run build",
+    "test": "vitest run",
+    "report:build": "tsx scripts/build-report.ts",
+    "report:html": "npm run report:build && tsx scripts/build-report-html.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "better-sqlite3": "^12.11.1",
+    "dotenv": "^17.4.2",
+    "openai": "^6.44.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "marked": "^18.0.5",
+    "prisma": "^7.8.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

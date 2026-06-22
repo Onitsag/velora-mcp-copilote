@@ -1,0 +1,84 @@
+// Velora — schéma de données du POC (e-commerce fictif)
+// Doc : https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Un produit du catalogue Velora.
+model Product {
+  id          Int         @id @default(autoincrement())
+  sku         String      @unique
+  name        String
+  description String
+  category    String // ex: "Robes", "Chaussures", "Accessoires"
+  color       String
+  priceCents  Int // prix en centimes d'euro
+  createdAt   DateTime    @default(now())
+  variants    Variant[]
+  orderItems  OrderItem[]
+  returns     Return[]
+}
+
+/// Déclinaison d'un produit (taille) avec son stock.
+model Variant {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  size      String // ex: "S", "M", "L", "38", "39"
+  stockQty  Int     @default(0)
+
+  @@unique([productId, size])
+}
+
+/// Un client de la boutique.
+model Customer {
+  id     Int     @id @default(autoincrement())
+  email  String  @unique
+  name   String
+  orders Order[]
+}
+
+/// Une commande passée par un client.
+model Order {
+  id             Int         @id @default(autoincrement())
+  reference      String      @unique // ex: "VEL-1003"
+  customer       Customer    @relation(fields: [customerId], references: [id])
+  customerId     Int
+  status         String // pending | preparing | shipped | delivered | returned | cancelled
+  carrier        String?
+  trackingNumber String?
+  createdAt      DateTime    @default(now())
+  items          OrderItem[]
+  returns        Return[]
+}
+
+/// Ligne d'une commande.
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  order      Order   @relation(fields: [orderId], references: [id])
+  orderId    Int
+  product    Product @relation(fields: [sku], references: [sku])
+  sku        String
+  size       String?
+  qty        Int
+  priceCents Int // prix unitaire payé, en centimes
+}
+
+/// Demande de retour / échange (RMA).
+model Return {
+  id        Int      @id @default(autoincrement())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product  @relation(fields: [sku], references: [sku])
+  sku       String
+  size      String?
+  reason    String
+  status    String   @default("requested") // requested | approved | received | refunded | rejected
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,12 @@
+{
+  "_comment": "Exemple de configuration Claude Desktop pour utiliser le serveur MCP Velora. Remplacez CHEMIN_ABSOLU par le chemin réel du projet, et lancez d'abord `npm run build`. Fichier réel à placer dans %APPDATA%/Claude/claude_desktop_config.json (Windows) ou ~/Library/Application Support/Claude/claude_desktop_config.json (macOS).",
+  "mcpServers": {
+    "velora-copilote": {
+      "command": "node",
+      "args": ["CHEMIN_ABSOLU/velora-mcp-copilote/dist/server.js"],
+      "env": {
+        "DATABASE_URL": "file:CHEMIN_ABSOLU/velora-mcp-copilote/dev.db"
+      }
+    }
+  }
+}
