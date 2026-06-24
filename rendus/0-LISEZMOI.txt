@@ -1,0 +1,18 @@
+RENDUS — Learning Lab M2DFS : MCP (Model Context Protocol) chez Velora
+=====================================================================
+
+Contenu de ce dossier (PDF) :
+  1-Rapport-MCP-Velora.pdf      : rapport complet (5 blocs : cadrage + SWOT,
+                                  R&D/POC, budget, pedagogie, posture).
+  2-Guide-installation-POC.pdf  : documentation technique / guide d'installation.
+  3-Atelier-Coding-Kata.pdf     : scenario d'atelier + coding kata.
+  4-Preuves-execution.pdf       : appels reels des outils MCP (resultats bruts).
+
+POC (code) : dossier « velora-mcp-copilote/ » (a la racine du projet).
+  Depot GitHub : https://github.com/Onitsag/velora-mcp-copilote
+  Lancer : npm install -> cp .env.example .env -> npm run db:setup
+           -> npm run build -> npm test
+  Tester SANS cle payante : modele local (Ollama) ou serveur seul
+           (npm test / npm run inspect).
+
+Regenerer ces PDF : npm run pdf

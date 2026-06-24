@@ -25,7 +25,8 @@
     "pretest": "npm run db:setup && npm run build",
     "test": "vitest run",
     "report:build": "tsx scripts/build-report.ts",
-    "report:html": "npm run report:build && tsx scripts/build-report-html.ts"
+    "report:html": "npm run report:build && tsx scripts/build-report-html.ts",
+    "pdf": "npm run report:build && tsx scripts/build-pdfs.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
