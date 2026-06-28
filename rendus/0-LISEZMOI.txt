@@ -1,4 +1,4 @@
-RENDUS — Learning Lab M2DFS : MCP (Model Context Protocol) chez Velora
+RENDUS : Learning Lab M2DFS, MCP (Model Context Protocol) chez Velora
 =====================================================================
 
 Contenu de ce dossier (PDF) :

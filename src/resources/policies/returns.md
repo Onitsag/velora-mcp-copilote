@@ -1,4 +1,4 @@
-# Politique de retours & échanges — Velora
+# Politique de retours & échanges : Velora
 
 ## Délai
 Vous disposez de **30 jours** à compter de la réception pour retourner un article.

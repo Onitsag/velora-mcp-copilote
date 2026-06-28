@@ -71,6 +71,18 @@ marked.use({
       const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       return `<pre><code>${escaped}</code></pre>`;
     },
+    // Les liens externes (http/https) restent cliquables. Les liens internes
+    // (chemins relatifs du dépôt) sont rendus en simple texte : sinon le moteur
+    // d'impression les transforme en URL "file:///" absolues, ce qui ferait fuiter
+    // un chemin machine dans le PDF.
+    link({ href, title, tokens }: { href: string; title?: string | null; tokens: unknown[] }) {
+      const text = (this as { parser: { parseInline: (t: unknown[]) => string } }).parser.parseInline(tokens);
+      if (/^https?:\/\//i.test(href)) {
+        const t = title ? ` title="${title}"` : "";
+        return `<a href="${href}"${t}>${text}</a>`;
+      }
+      return text;
+    },
   },
 });
 
@@ -127,8 +139,8 @@ async function buildReportHtml(): Promise<string> {
     "docs/rapport/05-posture.md",
   ];
   let body = `<div class="cover">
-    <h1>Learning Lab M2DFS — MCP (Model Context Protocol)</h1>
-    <div class="sub">Étude d'adoption — copilote conseiller de Velora (e-commerce fictif)</div>
+    <h1>Learning Lab M2DFS : MCP (Model Context Protocol)</h1>
+    <div class="sub">Étude d'adoption : copilote conseiller de Velora (e-commerce fictif)</div>
     <div class="meta">Rendu écrit : rapport + POC (dépôt GitHub)<br/>
     POC : serveur MCP (TypeScript) + agent compatible OpenAI (cloud ou local)</div>
   </div>`;
@@ -136,7 +148,7 @@ async function buildReportHtml(): Promise<string> {
     body += (await marked.parse(await read(b))) as string;
     body += '<div style="page-break-after:always"></div>';
   }
-  return wrap("Rapport — MCP / Velora", body);
+  return wrap("Rapport : MCP / Velora", body);
 }
 
 async function buildSimpleHtml(title: string, rels: string[]): Promise<string> {
@@ -193,7 +205,7 @@ async function main() {
 
   const docs: Array<{ name: string; html: string }> = [
     { name: "1-Rapport-MCP-Velora", html: await buildReportHtml() },
-    { name: "2-Guide-installation-POC", html: await buildSimpleHtml("Guide d'installation — POC", ["README.md"]) },
+    { name: "2-Guide-installation-POC", html: await buildSimpleHtml("Guide d'installation : POC", ["README.md"]) },
     {
       name: "3-Atelier-Coding-Kata",
       html: await buildSimpleHtml("Atelier & Coding Kata", [

@@ -1,4 +1,4 @@
-// KATA — solution de référence.
+// KATA : solution de référence.
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { errorResult, jsonResult } from "./util.js";

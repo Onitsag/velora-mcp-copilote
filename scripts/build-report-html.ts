@@ -62,7 +62,7 @@ const doc = `<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Rapport — MCP / Velora</title>
+<title>Rapport : MCP / Velora</title>
 <style>${css}</style>
 </head>
 <body>

@@ -15,7 +15,7 @@ function dataOf(res: unknown): any {
   return JSON.parse(text);
 }
 
-describe("Serveur MCP Velora — outils", () => {
+describe("Serveur MCP Velora : outils", () => {
   it("expose les 6 outils attendus", async () => {
     const { tools } = await conn.client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual(

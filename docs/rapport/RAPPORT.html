@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Rapport — MCP / Velora</title>
+<title>Rapport : MCP / Velora</title>
 <style>
   :root { --fg:#1a1a2e; --muted:#555; --accent:#4f46e5; --border:#ddd; }
   * { box-sizing: border-box; }
@@ -36,8 +36,8 @@
 </style>
 </head>
 <body>
-<main><h1>Learning Lab M2DFS — MCP (Model Context Protocol)</h1>
-<h2>Étude d&#39;adoption — copilote conseiller de Velora (e-commerce fictif)</h2>
+<main><h1>Learning Lab M2DFS : MCP (Model Context Protocol)</h1>
+<h2>Étude d&#39;adoption : copilote conseiller de Velora (e-commerce fictif)</h2>
 <p><strong>Rendu écrit</strong> : rapport + POC (dépôt GitHub).
 <strong>POC</strong> : serveur MCP (TypeScript) + agent compatible OpenAI (cloud ou local).</p>
 <hr>
@@ -59,7 +59,7 @@ réduire le temps de réponse et homogénéiser la qualité.</p>
 <h2>1.2 La technologie étudiée : MCP (Model Context Protocol)</h2>
 <p>MCP est un <strong>standard ouvert</strong> qui normalise la façon dont un modèle de langage
 se connecte à des <strong>outils</strong> et des <strong>données</strong> externes. Image courante : le
-« <strong>port USB-C des applications d&#39;IA</strong> » — au lieu d&#39;écrire une intégration
+« <strong>port USB-C des applications d&#39;IA</strong> » : au lieu d&#39;écrire une intégration
 sur-mesure par modèle, on expose ses capacités <strong>une seule fois</strong> via un
 <strong>serveur MCP</strong>, que n&#39;importe quel client compatible peut consommer.</p>
 <ul>
@@ -71,7 +71,7 @@ lecture), <strong>Prompts</strong> (gabarits réutilisables).</li>
 <li><strong>Transport</strong> : <code>stdio</code> (serveur local) ou <em>Streamable HTTP</em> (serveur distant).
 Protocole <strong>JSON-RPC</strong>, révision <strong>2025-11-25</strong>.</li>
 </ul>
-<h2>1.3 Argumentaire décisionnel — gains attendus</h2>
+<h2>1.3 Argumentaire décisionnel : gains attendus</h2>
 <table>
 <thead>
 <tr>
@@ -89,7 +89,7 @@ Protocole <strong>JSON-RPC</strong>, révision <strong>2025-11-25</strong>.</li>
 </tr>
 <tr>
 <td><strong>Découplage / pas de lock-in</strong></td>
-<td>Le serveur est indépendant du modèle. On change de LLM (cloud ↔ local) sans toucher à l&#39;intégration — démontré dans notre POC (bascule via <code>.env</code>).</td>
+<td>Le serveur est indépendant du modèle. On change de LLM (cloud ↔ local) sans toucher à l&#39;intégration, comme démontré dans notre POC (bascule via <code>.env</code>).</td>
 </tr>
 <tr>
 <td><strong>Sécurité / gouvernance</strong></td>
@@ -118,7 +118,7 @@ en production (rapport Stacklok 2026).</li>
 </ul>
 <blockquote>
 <p>Lecture critique : MCP n&#39;est plus une curiosité de 2024 mais un standard
-<strong>multi-éditeurs</strong> en adoption rapide — ce qui réduit le risque de pari
+<strong>multi-éditeurs</strong> en adoption rapide, ce qui réduit le risque de pari
 technologique. Sa jeunesse (spec qui évolue vite) reste à surveiller.</p>
 </blockquote>
 <p><strong>Comparaison des approches d&#39;outillage d&#39;un LLM.</strong></p>
@@ -209,24 +209,149 @@ journalisation) et de choix de modèle (cf. budget, bloc 3).</p>
 <h2>2.1 Objectif du POC</h2>
 <p>Démontrer, sur le cas Velora, qu&#39;un <strong>serveur MCP</strong> peut exposer les données
 métier (catalogue, stock, commandes, politiques) et qu&#39;un <strong>agent IA</strong> les
-exploite pour répondre à un conseiller — le tout <strong>testable sans clé payante</strong>.</p>
+exploite pour répondre à un conseiller, le tout <strong>testable sans clé payante</strong>.</p>
 <h2>2.2 Architecture</h2>
 <pre class="mermaid">flowchart TD
   U["Conseiller<br/>(question en langage naturel)"] --> CLI["Agent CLI<br/>(TypeScript)"]
   CLI -->|"API compatible OpenAI<br/>(tool calling)"| LLM["LLM compatible OpenAI<br/>OpenAI · Ollama · LM Studio"]
   LLM -. "décide quels outils appeler" .-> CLI
-  CLI <-->|"MCP — JSON-RPC sur stdio"| SRV["Serveur MCP Velora"]
+  CLI <-->|"MCP : JSON-RPC sur stdio"| SRV["Serveur MCP Velora"]
   SRV -->|"Prisma 7 + adapter"| DB[("SQLite<br/>catalogue · stock · commandes")]
   SRV --- TOOLS["Outils (6)"]
   SRV --- RES["Ressources (2)"]</pre><p>Deux briques <strong>découplées</strong> :</p>
 <ol>
-<li><strong>Serveur MCP</strong> (<code>src/server.ts</code>) — indépendant de tout LLM. Expose outils,
-ressources et un prompt ; lit les données via Prisma/SQLite.</li>
-<li><strong>Agent</strong> (<code>src/agent/</code>) — un <strong>hôte MCP</strong> qui : se connecte au serveur,
+<li><strong>Serveur MCP</strong> (<code>src/server.ts</code>), indépendant de tout LLM. Il expose des
+outils, des ressources et un prompt, et lit les données via Prisma/SQLite.</li>
+<li><strong>Agent</strong> (<code>src/agent/</code>), un <strong>hôte MCP</strong> qui se connecte au serveur,
 convertit les outils MCP en <em>functions</em> OpenAI (<code>bridge.ts</code>), puis exécute une
-<strong>boucle <em>tool-use</em></strong> contre un endpoint <strong>compatible OpenAI</strong>.</li>
+<strong>boucle tool-use</strong> contre un endpoint <strong>compatible OpenAI</strong>.</li>
 </ol>
-<h2>2.3 Choix techniques</h2>
+<h2>2.3 Comment MCP fonctionne (le protocole en pratique)</h2>
+<p>MCP suit une architecture <strong>client / serveur</strong> à trois rôles :</p>
+<ul>
+<li><strong>Hôte (host)</strong> : l&#39;application qui pilote le LLM. Ici, notre <strong>agent CLI</strong>.</li>
+<li><strong>Client</strong> : le connecteur intégré à l&#39;hôte qui parle le protocole. Il y a
+<strong>un client par serveur</strong> connecté.</li>
+<li><strong>Serveur (server)</strong> : le programme qui expose des capacités. Ici, le <strong>serveur
+Velora</strong>, qui publie 6 outils, 2 ressources et 1 prompt.</li>
+</ul>
+<p>Les messages circulent en <strong>JSON-RPC 2.0</strong>, sur un <strong>transport</strong> au choix :
+<code>stdio</code> (le serveur tourne en sous-processus local, notre cas) ou <em>Streamable
+HTTP</em> (serveur distant). Le serveur ne « connaît » jamais le modèle : il répond à
+des appels normalisés, quel que soit le client.</p>
+<p><strong>Cycle de vie d&#39;une session</strong> (ce que fait l&#39;agent à chaque lancement) :</p>
+<ol>
+<li><code>initialize</code> : poignée de main. Client et serveur échangent leur version de
+protocole et leurs <em>capabilities</em>.</li>
+<li><code>tools/list</code> : le client découvre les outils disponibles et leur schéma
+d&#39;entrée (JSON Schema).</li>
+<li><code>tools/call</code> : le client exécute un outil avec des arguments validés et reçoit
+le résultat. De même, <code>resources/read</code> sert les données et <code>prompts/get</code> les
+gabarits.</li>
+</ol>
+<p><strong>Trace concrète</strong> d&#39;un appel d&#39;outil (simplifiée) :</p>
+<pre><code>// requête  client -&gt; serveur
+{ "jsonrpc": "2.0", "id": 2, "method": "tools/call",
+  "params": { "name": "get_order_status", "arguments": { "reference": "VEL-1003" } } }
+
+// réponse  serveur -&gt; client
+{ "jsonrpc": "2.0", "id": 2, "result": {
+  "content": [ { "type": "text", "text": "{ \"status\": \"preparing\", ... }" } ] } }</code></pre><p>C&#39;est cette indépendance (un serveur, des messages normalisés) qui rend le même
+serveur consommable par <strong>plusieurs clients</strong> : notre agent, le <strong>MCP Inspector</strong>
+ou <strong>Claude Desktop</strong>, sans une ligne de code à changer.</p>
+<h2>2.4 Les primitives exposées par le serveur Velora</h2>
+<p>MCP définit trois primitives. Notre serveur les utilise toutes :</p>
+<ul>
+<li><strong>Tools (outils)</strong> : des actions appelables par le modèle, avec un schéma
+d&#39;entrée validé. Velora en expose <strong>6</strong> (détaillés en 2.5).</li>
+<li><strong>Resources (ressources)</strong> : des données en lecture, adressées par URI. Velora
+expose <code>policy://returns</code> et <code>policy://shipping</code> (politiques au format Markdown).</li>
+<li><strong>Prompts (gabarits)</strong> : des modèles de message réutilisables. Velora expose
+<code>conseiller_reply</code>, un gabarit de réponse conseiller.</li>
+</ul>
+<h2>2.5 Les 6 outils en détail</h2>
+<p>Chaque outil est défini dans un fichier dédié (<code>src/tools/</code>), avec un <strong>schéma
+Zod</strong> (typage + descriptions lues par le LLM) et une <strong>annotation</strong> de sûreté
+(<code>readOnlyHint</code>). Cinq outils sont en <strong>lecture seule</strong> ; seul
+<code>create_return_request</code> écrit, et uniquement sous condition.</p>
+<table>
+<thead>
+<tr>
+<th>Outil</th>
+<th>Entrée</th>
+<th>Sortie</th>
+<th>Type</th>
+<th>Cas testé (cf. bloc « Preuves d&#39;exécution »)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>search_products</code></td>
+<td><code>query?</code>, <code>category?</code>, <code>color?</code>, <code>maxPriceEur?</code>, <code>inStockOnly?</code></td>
+<td>Liste de produits (SKU, prix, disponibilité, stock total)</td>
+<td>Lecture</td>
+<td>Robes en stock, 2 résultats</td>
+</tr>
+<tr>
+<td><code>get_product</code></td>
+<td><code>sku</code></td>
+<td>Fiche complète + stock par taille</td>
+<td>Lecture</td>
+<td>VEL-CHAUS-001, stock par taille</td>
+</tr>
+<tr>
+<td><code>check_stock</code></td>
+<td><code>sku</code>, <code>size?</code></td>
+<td>Disponibilité globale ou pour une taille</td>
+<td>Lecture</td>
+<td>VEL-CHAUS-001 taille 39, 3 en stock</td>
+</tr>
+<tr>
+<td><code>get_order_status</code></td>
+<td><code>reference?</code> <strong>ou</strong> <code>email?</code></td>
+<td>Statut, articles et total d&#39;une commande, ou liste des commandes d&#39;un client</td>
+<td>Lecture</td>
+<td>VEL-1003 « En préparation » ; commandes d&#39;Alice Martin</td>
+</tr>
+<tr>
+<td><code>get_return_policy</code></td>
+<td><code>category?</code></td>
+<td>Politique de retours (Markdown)</td>
+<td>Lecture</td>
+<td>Renvoie la politique</td>
+</tr>
+<tr>
+<td><code>create_return_request</code></td>
+<td><code>reference</code>, <code>sku</code>, <code>reason</code>, <code>size?</code></td>
+<td>RMA créé, <strong>ou</strong> erreur si la commande n&#39;est pas livrée</td>
+<td><strong>Écriture</strong></td>
+<td>Refus sur VEL-1003 (non livrée), accepté sur VEL-1001 (livrée)</td>
+</tr>
+</tbody></table>
+<p><strong>Garde-fou métier</strong> : <code>create_return_request</code> vérifie que la commande est au
+statut <code>delivered</code> avant d&#39;écrire. Toute autre situation renvoie une erreur
+explicite, sans rien modifier. C&#39;est la traduction concrète du principe
+<em>human-in-the-loop</em> (cf. 2.12).</p>
+<h2>2.6 Du serveur MCP à l&#39;agent : le pont et la boucle tool-use</h2>
+<p>L&#39;agent ne réimplémente pas les outils : il les <strong>réutilise</strong> via MCP. Le passage
+du protocole MCP au format attendu par un LLM compatible OpenAI tient en deux
+fonctions (<code>src/agent/bridge.ts</code>) :</p>
+<ol>
+<li><strong>Conversion des outils</strong> : la liste <code>tools/list</code> (MCP) est transformée en
+<em>functions</em> OpenAI. Le schéma d&#39;entrée MCP (JSON Schema) devient directement le
+champ <code>parameters</code>. Aucune redéfinition manuelle.</li>
+<li><strong>Normalisation des résultats</strong> : le contenu renvoyé par un outil MCP est
+aplati en texte pour être réinjecté au modèle.</li>
+</ol>
+<p>La <strong>boucle</strong> (<code>src/agent/agent.ts</code>) enchaîne alors :</p>
+<ol>
+<li>On envoie au LLM la question du conseiller et la liste des outils.</li>
+<li>Si le LLM demande un (ou plusieurs) appels d&#39;outils, l&#39;agent les exécute
+<strong>réellement</strong> via le client MCP et lui renvoie les résultats.</li>
+<li>On répète jusqu&#39;à une réponse finale (plafond <code>AGENT_MAX_STEPS</code>, défaut 6).</li>
+</ol>
+<p>Un <em>system prompt</em> <strong>anti-invention</strong> impose au modèle de s&#39;appuyer sur les outils
+pour toute donnée factuelle (prix, stock, statut) et de ne jamais inventer.</p>
+<h2>2.7 Choix techniques</h2>
 <table>
 <thead>
 <tr>
@@ -258,7 +383,7 @@ convertit les outils MCP en <em>functions</em> OpenAI (<code>bridge.ts</code>), 
 <tr>
 <td>Agent</td>
 <td>SDK <code>openai</code> avec <code>baseURL</code> configurable</td>
-<td><strong>Compatible OpenAI, Ollama, LM Studio…</strong> via <code>.env</code></td>
+<td><strong>Compatible OpenAI, Ollama, LM Studio...</strong> via <code>.env</code></td>
 </tr>
 <tr>
 <td>Tests</td>
@@ -266,39 +391,33 @@ convertit les outils MCP en <em>functions</em> OpenAI (<code>bridge.ts</code>), 
 <td>Intégration outils (sans LLM) + boucle agent (LLM simulé)</td>
 </tr>
 </tbody></table>
-<h2>2.4 Portabilité &amp; test <strong>sans clé payante</strong> (note importante)</h2>
+<h2>2.8 Portabilité et test sans clé payante (note importante)</h2>
 <blockquote>
 <p>L&#39;agent utilise l&#39;<strong>API compatible OpenAI</strong>. Il fonctionne donc avec :
-<strong>OpenAI</strong> (clé payante), <strong>un modèle local</strong> (Ollama / LM Studio → <strong>gratuit,
-sans clé</strong>), ou tout fournisseur compatible (Groq, Together, OpenRouter…).
-On change de fournisseur en modifiant <strong>uniquement</strong> <code>LLM_BASE_URL</code>,
-<code>LLM_API_KEY</code>, <code>LLM_MODEL</code> dans <code>.env</code>.</p>
+<strong>OpenAI</strong> (clé payante), <strong>un modèle local</strong> (Ollama / LM Studio, donc
+<strong>gratuit et sans clé</strong>), ou tout fournisseur compatible (Groq, Together,
+OpenRouter...). On change de fournisseur en modifiant <strong>uniquement</strong>
+<code>LLM_BASE_URL</code>, <code>LLM_API_KEY</code>, <code>LLM_MODEL</code> dans <code>.env</code>.</p>
 <p>Le <strong>serveur MCP est indépendant du LLM</strong> : il se teste <strong>seul</strong>, sans aucune
 clé, via <code>npm test</code> ou le <em>MCP Inspector</em>. Il est aussi consommable par
-<strong>Claude Desktop</strong> (configuration fournie) — illustration concrète du
+<strong>Claude Desktop</strong> (configuration fournie), illustration concrète du
 « un serveur, plusieurs clients ».</p>
 </blockquote>
 <p>Cette note figure aussi dans le <code>README.md</code> et le fichier <code>.env.example</code>.</p>
-<h2>2.5 Outils et ressources exposés</h2>
-<p><strong>Outils</strong> (6) — voir résultats réels dans <a href="../demo/outils-demo.md"><code>../demo/outils-demo.md</code></a> :
-<code>search_products</code>, <code>get_product</code>, <code>check_stock</code>, <code>get_order_status</code>,
-<code>get_return_policy</code>, <code>create_return_request</code>.</p>
-<p><strong>Ressources</strong> (2) : <code>policy://returns</code>, <code>policy://shipping</code> (Markdown).
-<strong>Prompt</strong> (1) : <code>conseiller_reply</code> (gabarit de réponse conseiller).</p>
-<h2>2.6 Dépôt et installation</h2>
+<h2>2.9 Dépôt et installation</h2>
 <p>Dépôt : <code>https://github.com/Onitsag/velora-mcp-copilote</code>.
 Guide complet d&#39;installation <strong>sans friction</strong> dans le <code>README.md</code>. En résumé :</p>
 <pre><code>npm install
 cp .env.example .env        # profil local Ollama par défaut
 npm run db:setup            # crée la base SQLite + données fictives
 npm run build
-npm test                    # 12 tests, sans clé API</code></pre><h2>2.7 Cas d&#39;usage testés <strong>en conditions réelles</strong></h2>
+npm test                    # 12 tests, sans clé API</code></pre><h2>2.10 Cas d&#39;usage testés en conditions réelles</h2>
 <p>Le fichier <a href="../demo/outils-demo.md"><code>../demo/outils-demo.md</code></a> (généré par
 <code>npm run showcase</code>) contient des <strong>appels réels</strong> et leurs <strong>résultats bruts</strong>,
 dont des cas limites probants :</p>
 <ul>
 <li>recherche filtrée (robes en stock), fiche produit avec <strong>stock par taille</strong> ;</li>
-<li>statut d&#39;une commande connue (<code>VEL-1003</code> → <em>En préparation</em>, articles + total) ;</li>
+<li>statut d&#39;une commande connue (<code>VEL-1003</code>, « En préparation », articles + total) ;</li>
 <li><strong>garde-fou</strong> : <code>create_return_request</code> <strong>refuse</strong> une commande non livrée
 (<code>VEL-1003</code>) et <strong>accepte</strong> une commande livrée (<code>VEL-1001</code>).</li>
 </ul>
@@ -306,29 +425,30 @@ dont des cas limites probants :</p>
 <code>docs/demo/transcripts/</code>. La <strong>boucle tool-use</strong> est par ailleurs validée
 <strong>sans clé</strong> par <code>tests/agent.test.ts</code> (LLM déterministe simulé) : l&#39;agent appelle
 réellement <code>get_order_status</code> puis fonde sa réponse sur le résultat.</p>
-<h2>2.8 Tests &amp; qualité</h2>
+<h2>2.11 Tests et qualité</h2>
 <p><code>npm test</code> exécute <strong>12 tests</strong> (3 fichiers) :</p>
 <ul>
-<li><code>tests/tools.test.ts</code> — intégration des 6 outils via un <strong>vrai client MCP</strong>
+<li><code>tests/tools.test.ts</code>, intégration des 6 outils via un <strong>vrai client MCP</strong>
 (sous-processus serveur), incluant les cas d&#39;erreur et le garde-fou de retour ;</li>
-<li><code>tests/bridge.test.ts</code> — normalisation des résultats MCP → texte ;</li>
-<li><code>tests/agent.test.ts</code> — boucle <em>tool-use</em> de l&#39;agent avec LLM simulé.</li>
+<li><code>tests/bridge.test.ts</code>, normalisation des résultats MCP vers texte ;</li>
+<li><code>tests/agent.test.ts</code>, boucle tool-use de l&#39;agent avec LLM simulé.</li>
 </ul>
 <p><code>pretest</code> régénère la base et compile, garantissant des tests <strong>déterministes</strong>.</p>
-<h2>2.9 Sécurité (mesures du POC)</h2>
+<h2>2.12 Sécurité (mesures du POC)</h2>
 <ul>
 <li>Outils <strong>en lecture seule</strong> par défaut (<code>readOnlyHint</code>) ; seule écriture :
 <code>create_return_request</code>, <strong>restreinte aux commandes livrées</strong>, avec mention
 explicite <em>human-in-the-loop</em>.</li>
 <li><em>System prompt</em> <strong>anti-invention</strong> (le modèle doit s&#39;appuyer sur les outils).</li>
-<li><strong>Schémas d&#39;entrée plats et validés</strong> (Zod) → compat large + moindre surface.</li>
+<li><strong>Schémas d&#39;entrée plats et validés</strong> (Zod), donc compatibilité large et moindre
+surface d&#39;attaque.</li>
 <li>Logs serveur sur <strong>stderr</strong> uniquement (stdout réservé au protocole).</li>
 </ul>
-<h2>2.10 Limites assumées du POC</h2>
+<h2>2.13 Limites assumées du POC</h2>
 <p>Données <strong>fictives</strong> ; recherche <strong>lexicale simple</strong> (pas de recherche
 vectorielle) ; pas d&#39;authentification ni de multi-tenant ; transport <strong>stdio</strong>
-local (pas d&#39;exposition HTTP distante). Ces points sont des pistes d&#39;industrialisation,
-hors périmètre d&#39;un POC.</p>
+local (pas d&#39;exposition HTTP distante). Ces points sont des pistes
+d&#39;industrialisation, hors périmètre d&#39;un POC.</p>
 <hr>
 <h1>3. Étude budgétaire et d&#39;adoption</h1>
 <blockquote>
@@ -400,17 +520,17 @@ lecture. Volumes = hypothèses de travail pour Velora (~15 conseillers).</p>
 </tr>
 </tbody></table>
 <p>* 30 M × prix entrée + 5 M × prix sortie.</p>
-<p><strong>Leviers d&#39;optimisation</strong> : <em>prompt caching</em> (−90 % sur l&#39;entrée mise en cache —
+<p><strong>Leviers d&#39;optimisation</strong> : <em>prompt caching</em> (-90 % sur l&#39;entrée mise en cache :
 le <em>system prompt</em> et les définitions d&#39;outils sont réutilisés à chaque requête)
-et <em>Batch API</em> (−50 %) pour les traitements asynchrones. Avec caching, le coût
+et <em>Batch API</em> (-50 %) pour les traitements asynchrones. Avec caching, le coût
 gpt-4o-mini devient <strong>négligeable</strong> (quelques euros/mois).</p>
 <h3>b) Hébergement &amp; licences</h3>
 <ul>
-<li><strong>Serveur MCP</strong> : petit conteneur (1 vCPU / 1 Go) ≈ <strong>5–15 €/mois</strong>, ou
+<li><strong>Serveur MCP</strong> : petit conteneur (1 vCPU / 1 Go) ≈ <strong>5 à 15 €/mois</strong>, ou
 mutualisé avec l&#39;infra existante ≈ négligeable.</li>
 <li><strong>Base de données</strong> : Velora dispose déjà de sa base produit/commandes.</li>
 <li><strong>Licence MCP</strong> : <strong>0 €</strong> (standard open source).</li>
-<li><strong>Option auto-hébergée</strong> : machine avec GPU 16 Go (~1 500–2 500 € <em>one-shot</em>)
+<li><strong>Option auto-hébergée</strong> : machine avec GPU 16 Go (~1 500 à 2 500 € <em>one-shot</em>)
 pour servir un modèle 8B, ou serveur d&#39;inférence mutualisé.</li>
 </ul>
 <h2>3.3 Coûts indirects</h2>
@@ -423,7 +543,7 @@ pour servir un modèle 8B, ou serveur d&#39;inférence mutualisé.</li>
 </thead>
 <tbody><tr>
 <td>Industrialisation POC → prod (auth, connecteurs réels, transport HTTP, observabilité, revue sécu, intégration UI)</td>
-<td><strong>~15–25 j/h</strong></td>
+<td><strong>~15 à 25 j/h</strong></td>
 </tr>
 <tr>
 <td>Formation des conseillers (outil conversationnel simple)</td>
@@ -431,11 +551,11 @@ pour servir un modèle 8B, ou serveur d&#39;inférence mutualisé.</li>
 </tr>
 <tr>
 <td>Montée en compétence MCP des développeurs</td>
-<td><strong>~2–3 j/h</strong></td>
+<td><strong>~2 à 3 j/h</strong></td>
 </tr>
 <tr>
 <td>Maintenance courante</td>
-<td><strong>~1–2 j/mois</strong></td>
+<td><strong>~1 à 2 j/mois</strong></td>
 </tr>
 </tbody></table>
 <h2>3.4 Analyse d&#39;impact</h2>
@@ -443,7 +563,7 @@ pour servir un modèle 8B, ou serveur d&#39;inférence mutualisé.</li>
 <li><strong>Courbe d&#39;apprentissage</strong> : <strong>faible</strong> côté conseillers (c&#39;est un chat) ;
 <strong>modérée</strong> côté développeurs (MCP récent, mais SDK + Inspector matures).</li>
 <li><strong>Productivité</strong> : gain attendu sur le <strong>temps de recherche d&#39;information</strong>
-(objectif −30 à −50 % sur ces tâches), <strong>onboarding raccourci</strong> des nouveaux
+(objectif -30 à -50 % sur ces tâches), <strong>onboarding raccourci</strong> des nouveaux
 conseillers (le copilote sert de mémoire opérationnelle).</li>
 <li><strong>Risque transitoire</strong> : fiabilité (hallucinations) au démarrage → atténué par
 les garde-fous (anti-invention, lecture seule par défaut, supervision initiale).</li>
@@ -451,16 +571,19 @@ les garde-fous (anti-invention, lecture seule par défaut, supervision initiale)
 <h2>3.5 Synthèse ROI</h2>
 <p>À ces volumes, le <strong>coût d&#39;inférence cloud est marginal</strong> (≈ 7,5 €/mois en
 gpt-4o-mini, voire ~0 € en local) face au <strong>temps conseiller économisé</strong> (le coût
-dominant est salarial). L&#39;investissement réel est l&#39;<strong>industrialisation</strong> (~15–25
+dominant est salarial). L&#39;investissement réel est l&#39;<strong>industrialisation</strong> (~15 à 25
 j/h) et la <strong>conduite du changement</strong>. Le découplage MCP permet en outre de
 <strong>commencer en local (0 €, données sur site)</strong> puis de basculer vers une API
-managée si besoin — <strong>sans réécrire</strong> le serveur. Décision : <strong>adoption
+managée si besoin, <strong>sans réécrire</strong> le serveur. Décision : <strong>adoption
 recommandée</strong>, démarrage en local pour la confidentialité et le coût.</p>
 <hr>
 <h1>4. Ingénierie pédagogique</h1>
-<p>L&#39;objectif du Learning Lab est aussi de <strong>transmettre</strong> la compétence. Cette
-section décrit l&#39;atelier conçu pour des pairs développeurs. Le matériel complet
-est dans <a href="../atelier/"><code>../atelier/</code></a>.</p>
+<p>L&#39;objectif du Learning Lab est aussi de <strong>transmettre</strong> la compétence à mon
+équipe. En tant que <em>lead developer</em>, mon rôle n&#39;est pas de faire une simple
+démo, mais de rendre mes collègues <strong>autonomes</strong> sur MCP. Cette section décrit
+donc le dispositif de transfert : un <strong>atelier pratique</strong> pour des pairs
+développeurs (matériel complet dans <a href="../atelier/"><code>../atelier/</code></a>), puis un <strong>plan
+de déploiement progressif</strong> vers l&#39;équipe (4.4).</p>
 <h2>4.1 Objectifs pédagogiques</h2>
 <p>À l&#39;issue de l&#39;atelier (≈ 1 h 30), un participant sait :</p>
 <ol>
@@ -512,6 +635,22 @@ qui doit passer au vert.</p>
 <p>L&#39;exercice est volontairement <strong>isomorphe</strong> aux outils existants : le participant
 réutilise le patron <code>registerXxx(server)</code> déjà en place, ce qui ancre la
 compétence « écrire un outil MCP » de façon autonome.</p>
+<h2>4.4 Plan de transfert à l&#39;équipe (au-delà de l&#39;atelier)</h2>
+<p>L&#39;atelier amorce la compétence ; son ancrage durable passe par un déploiement
+progressif, que je piloterais ainsi :</p>
+<ol>
+<li><strong>Pilote</strong> (semaines 1 et 2) : 2 à 3 conseillers volontaires utilisent le
+copilote en conditions réelles, avec un développeur référent MCP pour le
+support et la collecte des retours.</li>
+<li><strong>Documentation interne</strong> : ce rapport et le <code>README</code> servent de socle ; on y
+ajoute les cas d&#39;usage Velora réellement rencontrés (FAQ, exemples).</li>
+<li><strong>Industrialisation</strong> (cf. budget, bloc 3) : connecteurs vers le vrai
+back-office, transport HTTP, authentification, observabilité, revue sécurité.</li>
+<li><strong>Généralisation</strong> : ouverture à l&#39;ensemble des conseillers, avec mesure des
+gains (temps de réponse, durée d&#39;onboarding des nouvelles recrues).</li>
+<li><strong>Capitalisation</strong> : chaque équipe peut publier ses propres serveurs MCP,
+réutilisables par les autres (logique « un serveur, plusieurs clients »).</li>
+</ol>
 <hr>
 <h1>5. Posture de Lead Developer (démarche &amp; synthèse)</h1>
 <h2>5.1 Démarche de veille</h2>
@@ -519,7 +658,7 @@ compétence « écrire un outil MCP » de façon autonome.</p>
 SDK officiels, pages de tarification éditeurs) et <strong>secondaires</strong> (registre
 officiel, retours d&#39;adoption, littérature sécurité). Les chiffres et faits
 techniques du rapport ont été <strong>vérifiés à la source</strong> (juin 2026) plutôt que
-repris de mémoire — la technologie évoluant vite.</p>
+repris de mémoire, la technologie évoluant vite.</p>
 <h2>5.2 Esprit critique</h2>
 <p>MCP a été évalué <strong>sans complaisance</strong> : au-delà de la « hype », le rapport
 identifie des <strong>faiblesses</strong> (spec jeune, <em>tool calling</em> inégal selon les modèles)
@@ -548,7 +687,7 @@ se forger une opinion <strong>et</strong> reproduire la démonstration.</p>
 écosystème) à la <strong>preuve</strong> (un POC fonctionnel, testé, documenté) puis au
 <strong>transfert</strong> (un atelier et un kata prêts à l&#39;emploi). La recommandation
 d&#39;adoption est <strong>étayée</strong> par des faits, un code opérationnel et une analyse
-économique — tout en restant lucide sur les conditions de mise en production.</p>
+économique, tout en restant lucide sur les conditions de mise en production.</p>
 <hr>
 </main>
 <script type="module">

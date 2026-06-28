@@ -2,11 +2,11 @@
 
 Fichiers fournis :
 
-- `get_shipping_estimate.starter.ts` — **squelette à compléter** (à copier vers
+- `get_shipping_estimate.starter.ts` : **squelette à compléter** (à copier vers
   `src/tools/getShippingEstimate.ts`).
-- `get_shipping_estimate.test.ts` — **test de validation** (à copier vers
+- `get_shipping_estimate.test.ts` : **test de validation** (à copier vers
   `tests/shipping.test.ts`).
-- `get_shipping_estimate.solution.ts` — **solution de référence** (à consulter
+- `get_shipping_estimate.solution.ts` : **solution de référence** (à consulter
   après avoir essayé).
 
 Suivez les étapes de [`../kata.md`](../kata.md).

@@ -6,7 +6,7 @@ La veille a combiné sources **primaires** (spécification MCP, documentation de
 SDK officiels, pages de tarification éditeurs) et **secondaires** (registre
 officiel, retours d'adoption, littérature sécurité). Les chiffres et faits
 techniques du rapport ont été **vérifiés à la source** (juin 2026) plutôt que
-repris de mémoire — la technologie évoluant vite.
+repris de mémoire, la technologie évoluant vite.
 
 ## 5.2 Esprit critique
 
@@ -41,4 +41,4 @@ Le Learning Lab a permis de passer de la **veille** (comprendre MCP et son
 écosystème) à la **preuve** (un POC fonctionnel, testé, documenté) puis au
 **transfert** (un atelier et un kata prêts à l'emploi). La recommandation
 d'adoption est **étayée** par des faits, un code opérationnel et une analyse
-économique — tout en restant lucide sur les conditions de mise en production.
+économique, tout en restant lucide sur les conditions de mise en production.

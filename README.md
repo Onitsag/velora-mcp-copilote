@@ -1,4 +1,4 @@
-# Velora — Copilote Conseiller (POC MCP)
+# Velora : Copilote Conseiller (POC MCP)
 
 POC du **Learning Lab M2DFS** sur le **Model Context Protocol (MCP)**.
 
@@ -7,16 +7,16 @@ Il comprend :
   et les politiques de l'e-commerce fictif **Velora** ;
 - un **agent IA compatible OpenAI** qui s'en sert pour assister les conseillers,
   utilisable avec **OpenAI, un modèle local (Ollama / LM Studio) ou tout
-  fournisseur compatible** — configurable uniquement via `.env`.
+  fournisseur compatible**, configurable uniquement via `.env`.
 
-📄 **Rapport complet** : [`docs/rapport/`](docs/rapport/) (5 blocs) — version
+📄 **Rapport complet** : [`docs/rapport/`](docs/rapport/) (5 blocs). Version
 assemblée : [`docs/rapport/RAPPORT.md`](docs/rapport/RAPPORT.md).
 🎓 **Atelier + kata** : [`docs/atelier/`](docs/atelier/).
 🧪 **Preuves d'exécution** : [`docs/demo/`](docs/demo/).
 
 ---
 
-## ⭐ Note importante — tester SANS clé payante
+## ⭐ Note importante : tester SANS clé payante
 
 > L'agent utilise l'**API compatible OpenAI**. Vous pouvez donc le faire tourner :
 > - avec un **modèle local GRATUIT** (Ollama ou LM Studio) → **aucune clé** ;
@@ -46,7 +46,7 @@ npm run db:setup            # crée la base SQLite + données fictives Velora
 npm run build               # compile le serveur (dist/)
 ```
 
-## Vérifier que tout marche — sans aucune clé
+## Vérifier que tout marche (sans aucune clé)
 ```bash
 npm test                    # 12 tests (outils MCP + boucle agent simulée)
 npm run showcase            # appels réels des outils -> docs/demo/outils-demo.md
@@ -55,7 +55,7 @@ npm run inspect             # MCP Inspector sur http://localhost:6274
 
 ## Lancer l'agent (copilote)
 
-### Option A — modèle local gratuit (recommandé pour tester)
+### Option A : modèle local gratuit (recommandé pour tester)
 ```bash
 # 1) installer Ollama puis récupérer un modèle qui gère le tool-calling :
 ollama pull llama3.1
@@ -66,7 +66,7 @@ npm run agent -- "Où en est la commande VEL-1003 ?"
 npm run demo                # rejoue plusieurs questions -> docs/demo/transcripts/
 ```
 
-### Option B — OpenAI (clé payante)
+### Option B : OpenAI (clé payante)
 Dans `.env`, commentez le profil Ollama et décommentez le profil OpenAI
 (`LLM_MODEL=gpt-4o-mini` recommandé), renseignez `LLM_API_KEY`, puis :
 ```bash

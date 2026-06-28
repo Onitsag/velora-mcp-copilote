@@ -1,4 +1,4 @@
-// KATA — squelette. Copier ce fichier vers src/tools/getShippingEstimate.ts,
+// KATA : squelette. Copier ce fichier vers src/tools/getShippingEstimate.ts,
 // puis l'enregistrer dans src/tools/index.ts (cf. docs/atelier/kata.md).
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";

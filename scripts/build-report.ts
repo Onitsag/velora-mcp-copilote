@@ -14,13 +14,13 @@ const FILES = [
 ];
 
 const cover = `---
-title: "Learning Lab M2DFS — MCP (Model Context Protocol)"
+title: "Learning Lab M2DFS : MCP (Model Context Protocol)"
 subtitle: "Étude d'adoption pour le copilote conseiller de Velora (e-commerce)"
 date: "2026"
 ---
 
-# Learning Lab M2DFS — MCP (Model Context Protocol)
-## Étude d'adoption — copilote conseiller de Velora (e-commerce fictif)
+# Learning Lab M2DFS : MCP (Model Context Protocol)
+## Étude d'adoption : copilote conseiller de Velora (e-commerce fictif)
 
 **Rendu écrit** : rapport + POC (dépôt GitHub).
 **POC** : serveur MCP (TypeScript) + agent compatible OpenAI (cloud ou local).

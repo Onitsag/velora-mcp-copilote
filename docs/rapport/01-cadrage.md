@@ -22,7 +22,7 @@ réduire le temps de réponse et homogénéiser la qualité.
 
 MCP est un **standard ouvert** qui normalise la façon dont un modèle de langage
 se connecte à des **outils** et des **données** externes. Image courante : le
-« **port USB-C des applications d'IA** » — au lieu d'écrire une intégration
+« **port USB-C des applications d'IA** » : au lieu d'écrire une intégration
 sur-mesure par modèle, on expose ses capacités **une seule fois** via un
 **serveur MCP**, que n'importe quel client compatible peut consommer.
 
@@ -34,13 +34,13 @@ sur-mesure par modèle, on expose ses capacités **une seule fois** via un
 - **Transport** : `stdio` (serveur local) ou *Streamable HTTP* (serveur distant).
   Protocole **JSON-RPC**, révision **2025-11-25**.
 
-## 1.3 Argumentaire décisionnel — gains attendus
+## 1.3 Argumentaire décisionnel : gains attendus
 
 | Axe | Gain apporté par MCP |
 |-----|----------------------|
 | **Maintenabilité** | Outils centralisés dans un serveur, schémas typés (Zod / JSON Schema). Une seule source de vérité, testable isolément. |
 | **Réutilisabilité** | *Un* serveur, *plusieurs* clients : Claude Desktop, agent custom, IDE, futur agent vocal… sans réécriture. |
-| **Découplage / pas de lock-in** | Le serveur est indépendant du modèle. On change de LLM (cloud ↔ local) sans toucher à l'intégration — démontré dans notre POC (bascule via `.env`). |
+| **Découplage / pas de lock-in** | Le serveur est indépendant du modèle. On change de LLM (cloud ↔ local) sans toucher à l'intégration, comme démontré dans notre POC (bascule via `.env`). |
 | **Sécurité / gouvernance** | Annotations d'outils (`readOnly`, `destructive`), périmètre d'accès maîtrisé, journalisation centralisable, *allow-list* via registre. |
 | **Scalabilité (organisationnelle)** | Chaque équipe publie ses serveurs ; l'écosystème se compose au lieu de se dupliquer. |
 | **Time-to-market** | SDK officiels (TS/Python), *MCP Inspector*, nombreux serveurs prêts à l'emploi. |
@@ -58,7 +58,7 @@ sur-mesure par modèle, on expose ses capacités **une seule fois** via un
   en production (rapport Stacklok 2026).
 
 > Lecture critique : MCP n'est plus une curiosité de 2024 mais un standard
-> **multi-éditeurs** en adoption rapide — ce qui réduit le risque de pari
+> **multi-éditeurs** en adoption rapide, ce qui réduit le risque de pari
 > technologique. Sa jeunesse (spec qui évolue vite) reste à surveiller.
 
 **Comparaison des approches d'outillage d'un LLM.**

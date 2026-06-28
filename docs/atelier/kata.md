@@ -1,4 +1,4 @@
-# Coding Kata — Ajouter l'outil `get_shipping_estimate`
+# Coding Kata : Ajouter l'outil `get_shipping_estimate`
 
 ## Objectif
 Ajouter au serveur MCP Velora un outil qui **estime le délai et le tarif de

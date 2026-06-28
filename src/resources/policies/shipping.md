@@ -1,11 +1,11 @@
-# Politique de livraison — Velora
+# Politique de livraison : Velora
 
 ## Modes de livraison (France métropolitaine)
 | Mode | Délai estimé | Tarif | Offert dès |
 |------|--------------|-------|------------|
 | Point relais | 3 à 4 jours ouvrés | 3,90 € | 50 € d'achat |
 | Domicile (Colissimo) | 2 à 3 jours ouvrés | 4,90 € | 50 € d'achat |
-| Express (Chronopost 24h) | 1 jour ouvré | 9,90 € | — |
+| Express (Chronopost 24h) | 1 jour ouvré | 9,90 € | Non offert |
 
 ## Zones desservies
 - **France métropolitaine** : tous les modes ci-dessus.

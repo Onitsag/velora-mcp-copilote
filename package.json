@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "POC Learning Lab M2DFS — Serveur MCP + agent compatible OpenAI pour le copilote conseiller de Velora (e-commerce fictif).",
+  "description": "POC Learning Lab M2DFS : serveur MCP + agent compatible OpenAI pour le copilote conseiller de Velora (e-commerce fictif).",
   "license": "MIT",
   "engines": {
     "node": ">=20"

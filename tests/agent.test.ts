@@ -57,7 +57,7 @@ function makeStubLLM(): ChatModel {
   };
 }
 
-describe("Agent — boucle tool-use (stub LLM)", () => {
+describe("Agent : boucle tool-use (stub LLM)", () => {
   let conn: McpConnection;
   beforeAll(async () => {
     conn = await connectMcp();

@@ -1,4 +1,4 @@
-// KATA — test de validation. Copier vers tests/shipping.test.ts une fois l'outil
+// KATA : test de validation. Copier vers tests/shipping.test.ts une fois l'outil
 // implémenté et enregistré, puis lancer `npm test`.
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { connectMcp, type McpConnection } from "../src/agent/mcpClient.js";
@@ -15,7 +15,7 @@ function dataOf(res: unknown): any {
   return JSON.parse((res as any)?.content?.[0]?.text);
 }
 
-describe("Kata — get_shipping_estimate", () => {
+describe("Kata : get_shipping_estimate", () => {
   it("France : 4,90 € en 2 à 3 jours", async () => {
     const res = await conn.client.callTool({
       name: "get_shipping_estimate",

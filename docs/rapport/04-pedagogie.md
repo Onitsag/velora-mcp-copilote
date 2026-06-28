@@ -1,8 +1,11 @@
 # 4. Ingénierie pédagogique
 
-L'objectif du Learning Lab est aussi de **transmettre** la compétence. Cette
-section décrit l'atelier conçu pour des pairs développeurs. Le matériel complet
-est dans [`../atelier/`](../atelier/).
+L'objectif du Learning Lab est aussi de **transmettre** la compétence à mon
+équipe. En tant que *lead developer*, mon rôle n'est pas de faire une simple
+démo, mais de rendre mes collègues **autonomes** sur MCP. Cette section décrit
+donc le dispositif de transfert : un **atelier pratique** pour des pairs
+développeurs (matériel complet dans [`../atelier/`](../atelier/)), puis un **plan
+de déploiement progressif** vers l'équipe (4.4).
 
 ## 4.1 Objectifs pédagogiques
 
@@ -37,3 +40,20 @@ qui doit passer au vert.
 L'exercice est volontairement **isomorphe** aux outils existants : le participant
 réutilise le patron `registerXxx(server)` déjà en place, ce qui ancre la
 compétence « écrire un outil MCP » de façon autonome.
+
+## 4.4 Plan de transfert à l'équipe (au-delà de l'atelier)
+
+L'atelier amorce la compétence ; son ancrage durable passe par un déploiement
+progressif, que je piloterais ainsi :
+
+1. **Pilote** (semaines 1 et 2) : 2 à 3 conseillers volontaires utilisent le
+   copilote en conditions réelles, avec un développeur référent MCP pour le
+   support et la collecte des retours.
+2. **Documentation interne** : ce rapport et le `README` servent de socle ; on y
+   ajoute les cas d'usage Velora réellement rencontrés (FAQ, exemples).
+3. **Industrialisation** (cf. budget, bloc 3) : connecteurs vers le vrai
+   back-office, transport HTTP, authentification, observabilité, revue sécurité.
+4. **Généralisation** : ouverture à l'ensemble des conseillers, avec mesure des
+   gains (temps de réponse, durée d'onboarding des nouvelles recrues).
+5. **Capitalisation** : chaque équipe peut publier ses propres serveurs MCP,
+   réutilisables par les autres (logique « un serveur, plusieurs clients »).

@@ -14,15 +14,15 @@ md += `du client MCP vers le serveur Velora et les **résultats bruts** renvoyé
 
 const { tools } = await client.listTools();
 md += `## Outils disponibles\n\n`;
-md += tools.map((t) => `- \`${t.name}\` — ${t.description ?? ""}`).join("\n") + "\n\n";
+md += tools.map((t) => `- \`${t.name}\` : ${t.description ?? ""}`).join("\n") + "\n\n";
 
 const { resources } = await client.listResources();
 md += `## Ressources disponibles\n\n`;
-md += resources.map((r) => `- \`${r.uri}\` — ${r.name}`).join("\n") + "\n\n";
+md += resources.map((r) => `- \`${r.uri}\` : ${r.name}`).join("\n") + "\n\n";
 
 const demos: Array<[string, string, Record<string, unknown>]> = [
   ["Rechercher les robes en stock", "search_products", { category: "Robes", inStockOnly: true }],
-  ["Fiche produit — bottines Chelsea", "get_product", { sku: "VEL-CHAUS-001" }],
+  ["Fiche produit : bottines Chelsea", "get_product", { sku: "VEL-CHAUS-001" }],
   ["Vérifier le stock de la taille 39", "check_stock", { sku: "VEL-CHAUS-001", size: "39" }],
   ["Statut de la commande VEL-1003", "get_order_status", { reference: "VEL-1003" }],
   ["Commandes du client alice.martin", "get_order_status", { email: "alice.martin@example.com" }],

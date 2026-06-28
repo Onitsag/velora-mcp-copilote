@@ -20,9 +20,9 @@ console.error(`[demo] Fournisseur : ${cfg.baseUrl} | Modèle : ${cfg.model}`);
 
 const { client, close } = await connectMcp();
 
-let md = `# Transcripts de démo — Copilote conseiller Velora\n\n`;
+let md = `# Transcripts de démo : Copilote conseiller Velora\n\n`;
 md += `> Généré par \`npm run demo\`.\n>\n`;
-md += `> Fournisseur : \`${cfg.baseUrl}\` — Modèle : \`${cfg.model}\`\n\n`;
+md += `> Fournisseur : \`${cfg.baseUrl}\`, Modèle : \`${cfg.model}\`\n\n`;
 md += `Chaque réponse est produite par l'agent via la boucle *tool-use* sur le serveur MCP.\n\n---\n\n`;
 
 for (const question of QUESTIONS) {

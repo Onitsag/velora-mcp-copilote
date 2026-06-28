@@ -5,17 +5,17 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
 
 ## Outils disponibles
 
-- `search_products` — Recherche dans le catalogue Velora par mots-clés, catégorie, couleur et prix maximum. Renvoie pour chaque produit son SKU, son prix et sa disponibilité.
-- `get_product` — Renvoie la fiche complète d'un produit (description, prix, stock par taille) à partir de son SKU.
-- `check_stock` — Vérifie la disponibilité d'un produit, globalement ou pour une taille précise.
-- `get_order_status` — Renvoie le statut d'une commande à partir de sa référence (ex: VEL-1003), ou la liste des commandes d'un client à partir de son email.
-- `get_return_policy` — Renvoie la politique de retours et d'échanges de Velora (délais, conditions, remboursement).
-- `create_return_request` — Enregistre une demande de retour pour un article d'une commande LIVRÉE. Action d'écriture : en production, elle doit être confirmée par un humain (human-in-the-loop).
+- `search_products` : Recherche dans le catalogue Velora par mots-clés, catégorie, couleur et prix maximum. Renvoie pour chaque produit son SKU, son prix et sa disponibilité.
+- `get_product` : Renvoie la fiche complète d'un produit (description, prix, stock par taille) à partir de son SKU.
+- `check_stock` : Vérifie la disponibilité d'un produit, globalement ou pour une taille précise.
+- `get_order_status` : Renvoie le statut d'une commande à partir de sa référence (ex: VEL-1003), ou la liste des commandes d'un client à partir de son email.
+- `get_return_policy` : Renvoie la politique de retours et d'échanges de Velora (délais, conditions, remboursement).
+- `create_return_request` : Enregistre une demande de retour pour un article d'une commande LIVRÉE. Action d'écriture : en production, elle doit être confirmée par un humain (human-in-the-loop).
 
 ## Ressources disponibles
 
-- `policy://returns` — politique-retours
-- `policy://shipping` — politique-livraison
+- `policy://returns` : politique-retours
+- `policy://shipping` : politique-livraison
 
 ## Rechercher les robes en stock
 
@@ -47,7 +47,7 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
 }
 ```
 
-## Fiche produit — bottines Chelsea
+## Fiche produit : bottines Chelsea
 
 **Appel :** `get_product({"sku":"VEL-CHAUS-001"})`
 
@@ -114,7 +114,7 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
   "statusLabel": "En préparation",
   "carrier": null,
   "trackingNumber": null,
-  "createdAt": "2026-06-28T18:27:35.520Z",
+  "createdAt": "2026-06-28T21:25:21.920Z",
   "customer": {
     "name": "Chloé Nguyen",
     "email": "chloe.nguyen@example.com"
@@ -150,14 +150,14 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
       "reference": "VEL-1001",
       "status": "delivered",
       "statusLabel": "Livrée",
-      "createdAt": "2026-06-28T18:27:35.480Z",
+      "createdAt": "2026-06-28T21:25:21.883Z",
       "itemsCount": 2
     },
     {
       "reference": "VEL-1005",
       "status": "returned",
       "statusLabel": "Retournée",
-      "createdAt": "2026-06-28T18:27:35.558Z",
+      "createdAt": "2026-06-28T21:25:21.957Z",
       "itemsCount": 1
     }
   ]
@@ -179,7 +179,7 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
 ```json
 {
   "message": "Demande de retour enregistrée (RMA créé).",
-  "rmaId": 12,
+  "rmaId": 15,
   "reference": "VEL-1001",
   "sku": "VEL-ROBE-001",
   "size": "M",
