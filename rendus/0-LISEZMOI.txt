@@ -1,18 +1,20 @@
-RENDUS : Learning Lab M2DFS, MCP (Model Context Protocol) chez Velora
-=====================================================================
+RENDU : Learning Lab M2DFS, MCP (Model Context Protocol) chez Velora
+====================================================================
 
-Contenu de ce dossier (PDF) :
-  1-Rapport-MCP-Velora.pdf      : rapport complet (5 blocs : cadrage + SWOT,
-                                  R&D/POC, budget, pedagogie, posture).
-  2-Guide-installation-POC.pdf  : documentation technique / guide d'installation.
-  3-Atelier-Coding-Kata.pdf     : scenario d'atelier + coding kata.
-  4-Preuves-execution.pdf       : appels reels des outils MCP (resultats bruts).
+Auteur : Timéo GASTINEAU (M2 Développeur FullStack)
 
-POC (code) : dossier « velora-mcp-copilote/ » (a la racine du projet).
-  Depot GitHub : https://github.com/Onitsag/velora-mcp-copilote
-  Lancer : npm install -> cp .env.example .env -> npm run db:setup
-           -> npm run build -> npm test
-  Tester SANS cle payante : modele local (Ollama) ou serveur seul
-           (npm test / npm run inspect).
+Livrable unique :
+  learning_lab_GASTINEAU_Timeo_mcp.pdf
+  Contient : note de cadrage + SWOT, démarche R&D et POC (avec extraits de code
+  et preuves d'exécution), étude budgétaire, ingénierie pédagogique + coding kata,
+  posture de lead dev, et annexes (guide d'installation, preuves, ressources).
+  Le lien du dépôt GitHub est inscrit sur la couverture du PDF.
 
-Regenerer ces PDF : npm run pdf
+Code du POC :
+  https://github.com/Onitsag/velora-mcp-copilote
+  Installation : npm install  ->  cp .env.example .env  ->  npm run db:setup
+                 ->  npm run build  ->  npm test
+  Test sans clé payante : modèle local (Ollama) ou serveur seul
+                 (npm test / npm run inspect).
+
+Régénérer le PDF : npm run pdf

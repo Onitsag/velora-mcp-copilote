@@ -118,13 +118,17 @@ docs/                  # rapport, atelier (kata), preuves, diagrammes
 | `npm run agent -- "…"` | pose une question au copilote (LLM requis) |
 | `npm run demo` | transcripts multi-questions (LLM requis) |
 | `npm run report:html` | assemble le rapport → `docs/rapport/RAPPORT.html` |
+| `npm run pdf` | génère le rendu PDF unique → `rendus/` |
 
-## Exporter le rapport en PDF
+## Rendu PDF (livrable unique)
+Le rendu est **un seul PDF** (couverture avec lien du dépôt, sommaire, les 5
+sections, puis annexes : guide d'installation, preuves d'exécution, ressources) :
 ```bash
-npm run report:html
+npm run pdf
 ```
-Ouvrez `docs/rapport/RAPPORT.html` puis **Imprimer → Enregistrer en PDF**.
-(Le Markdown des `docs/rapport/*.md` se lit aussi directement sur GitHub.)
+Il est écrit dans `rendus/learning_lab_GASTINEAU_Timeo_mcp.pdf`.
+(Le Markdown des `docs/rapport/*.md` se lit aussi directement sur GitHub ;
+`npm run report:html` en produit une version HTML imprimable.)
 
 ## Sécurité (POC)
 Outils en **lecture seule** par défaut ; seule écriture `create_return_request`

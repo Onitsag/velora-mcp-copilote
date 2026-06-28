@@ -99,6 +99,29 @@ statut `delivered` avant d'écrire. Toute autre situation renvoie une erreur
 explicite, sans rien modifier. C'est la traduction concrète du principe
 *human-in-the-loop* (cf. 2.12).
 
+Concrètement, un outil tient en un schéma Zod (validé et décrit pour le LLM), une
+annotation de sûreté et un handler. Exemple (extrait de `src/tools/checkStock.ts`) :
+
+```ts
+server.registerTool(
+  "check_stock",
+  {
+    title: "Vérifier le stock",
+    description: "Vérifie la disponibilité d'un produit, globalement ou pour une taille.",
+    inputSchema: {
+      sku: z.string().describe("SKU exact du produit, ex: VEL-CHAUS-001"),
+      size: z.string().optional().describe("Taille précise, ex: 39, M, TU"),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false }, // outil en lecture seule
+  },
+  async ({ sku, size }) => {
+    const p = await findProductBySku(sku);
+    if (!p) return errorResult(`Aucun produit trouvé pour le SKU "${sku}".`);
+    // ... renvoie le stock (global, ou pour la taille demandée)
+  },
+);
+```
+
 ## 2.6 Du serveur MCP à l'agent : le pont et la boucle tool-use
 
 L'agent ne réimplémente pas les outils : il les **réutilise** via MCP. Le passage
@@ -120,6 +143,28 @@ La **boucle** (`src/agent/agent.ts`) enchaîne alors :
 
 Un *system prompt* **anti-invention** impose au modèle de s'appuyer sur les outils
 pour toute donnée factuelle (prix, stock, statut) et de ne jamais inventer.
+
+Le cœur de la boucle (extrait de `src/agent/agent.ts`) :
+
+```ts
+for (let i = 0; i < maxSteps; i++) {
+  const res = await llm.chat.completions.create({ model, messages, tools, tool_choice: "auto" });
+  const msg = res.choices[0].message;
+  messages.push(msg);
+
+  // Aucun outil demandé : le modèle a sa réponse finale
+  if (!msg.tool_calls?.length) return { answer: msg.content ?? "", steps };
+
+  // Sinon, on exécute chaque outil via le client MCP, puis on renvoie le résultat au modèle
+  for (const call of msg.tool_calls) {
+    const result = await client.callTool({
+      name: call.function.name,
+      arguments: JSON.parse(call.function.arguments),
+    });
+    messages.push({ role: "tool", tool_call_id: call.id, content: mcpResultToText(result) });
+  }
+}
+```
 
 ## 2.7 Choix techniques
 

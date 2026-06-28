@@ -1,5 +1,6 @@
-// Génère TOUS les rendus en PDF dans rendus/ , via un navigateur Chromium
-// (Edge/Chrome) en mode headless. Aucune dépendance lourde.
+// Génère LE rendu unique en PDF dans rendus/ , via un navigateur Chromium
+// (Edge/Chrome) en mode headless. Un seul fichier : couverture + sommaire +
+// les 5 sections du rapport + annexes (installation, preuves, ressources).
 // Usage : npm run pdf
 import { execFile } from "node:child_process";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -15,6 +16,8 @@ const execFileAsync = promisify(execFile);
 const ROOT = process.cwd();
 const OUT_DIR = path.join(ROOT, "rendus");
 const TMP_DIR = path.join(os.tmpdir(), "velora-pdf-build");
+const OUT_NAME = "learning_lab_GASTINEAU_Timeo_mcp";
+const REPO_URL = "https://github.com/Onitsag/velora-mcp-copilote";
 
 // Diagramme d'architecture en SVG inline (rendu fiable dans le PDF, sans JS/CDN).
 const ARCHITECTURE_SVG = `
@@ -64,6 +67,15 @@ const ARCHITECTURE_SVG = `
   <line x1="320" y1="302" x2="378" y2="316" stroke="#94a3b8" stroke-width="1.2"/>
 </svg>`;
 
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 marked.use({
   renderer: {
     code({ text, lang }: { text: string; lang?: string }) {
@@ -71,13 +83,20 @@ marked.use({
       const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       return `<pre><code>${escaped}</code></pre>`;
     },
-    // Les liens externes (http/https) restent cliquables. Les liens internes
-    // (chemins relatifs du dépôt) sont rendus en simple texte : sinon le moteur
-    // d'impression les transforme en URL "file:///" absolues, ce qui ferait fuiter
-    // un chemin machine dans le PDF.
+    heading({ tokens, depth }: { tokens: unknown[]; depth: number }) {
+      const self = this as { parser: { parseInline: (t: unknown[]) => string } };
+      const inner = self.parser.parseInline(tokens);
+      const id = slugify(inner.replace(/<[^>]+>/g, ""));
+      return `<h${depth} id="${id}">${inner}</h${depth}>`;
+    },
+    // Liens externes (http/https) et ancres internes (#) cliquables. Les liens
+    // relatifs (chemins du dépôt) sont rendus en texte : sinon le moteur
+    // d'impression les transforme en URL "file:///" absolues, ce qui ferait
+    // fuiter un chemin machine dans le PDF.
     link({ href, title, tokens }: { href: string; title?: string | null; tokens: unknown[] }) {
-      const text = (this as { parser: { parseInline: (t: unknown[]) => string } }).parser.parseInline(tokens);
-      if (/^https?:\/\//i.test(href)) {
+      const self = this as { parser: { parseInline: (t: unknown[]) => string } };
+      const text = self.parser.parseInline(tokens);
+      if (/^(https?:\/\/|#)/i.test(href)) {
         const t = title ? ` title="${title}"` : "";
         return `<a href="${href}"${t}>${text}</a>`;
       }
@@ -111,10 +130,24 @@ const CSS = `
   table, pre, blockquote, .diagram { page-break-inside: avoid; }
   .diagram { text-align: center; margin: 1.2rem 0; }
   .diagram svg { max-width: 100%; height: auto; }
-  .cover { text-align: center; padding-top: 28vh; page-break-after: always; }
-  .cover h1 { border: none; font-size: 2rem; }
-  .cover .sub { font-size: 1.15rem; color: var(--muted); margin-top: .4rem; }
-  .cover .meta { margin-top: 2rem; font-size: .95rem; color: var(--muted); }
+  .pagebreak { page-break-after: always; }
+
+  .cover { display: flex; flex-direction: column; justify-content: center; min-height: 86vh; }
+  .cover .kicker { color: var(--accent); font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; font-size: .8rem; }
+  .cover h1 { border: none; font-size: 2.6rem; margin: .6rem 0 .2rem; color: var(--fg); }
+  .cover .sub { font-size: 1.2rem; color: var(--muted); }
+  .cover .meta { margin-top: 2.4rem; font-size: 1rem; line-height: 1.7; }
+  .cover .meta a { word-break: break-all; }
+  .cover .tagline { color: var(--muted); margin-top: 1rem; }
+
+  .toc h2 { color: var(--accent); border: none; }
+  .toc ul { list-style: none; padding-left: 0; }
+  .toc li { margin: .15rem 0; }
+  .toc li a { color: var(--fg); }
+  .toc-h1 { font-weight: 600; margin-top: .5rem !important; }
+  .toc-h2 { padding-left: 1.4rem; font-size: .92rem; }
+  .toc-h2 a { color: var(--muted); }
 `;
 
 function wrap(title: string, inner: string): string {
@@ -130,7 +163,84 @@ function stripFrontMatter(md: string): string {
   return md.replace(/^---\n[\s\S]*?\n---\n/, "");
 }
 
-async function buildReportHtml(): Promise<string> {
+/** Extrait les titres (# et ##) hors blocs de code, pour un sommaire cliquable. */
+function buildToc(markdowns: string[]): string {
+  const items: string[] = [];
+  for (const md of markdowns) {
+    let inFence = false;
+    for (const line of md.split("\n")) {
+      if (/^\s*```/.test(line)) {
+        inFence = !inFence;
+        continue;
+      }
+      if (inFence) continue;
+      const m = /^(#{1,2})\s+(.*?)\s*#*\s*$/.exec(line);
+      if (!m) continue;
+      const depth = m[1].length;
+      const text = m[2].replace(/[*`_]/g, "").trim();
+      items.push(`<li class="toc-h${depth}"><a href="#${slugify(text)}">${text}</a></li>`);
+    }
+  }
+  return `<nav class="toc"><h2>Sommaire</h2><ul>\n${items.join("\n")}\n</ul></nav>`;
+}
+
+const COVER = `<div class="cover">
+  <div class="kicker">Learning Lab · M2 Développeur FullStack</div>
+  <h1>MCP : Model Context Protocol</h1>
+  <div class="sub">Étude d'adoption : un copilote conseiller pour Velora (e-commerce fictif)</div>
+  <div class="meta">
+    <p><strong>Auteur :</strong> Timéo GASTINEAU</p>
+    <p><strong>Dépôt GitHub du POC :</strong><br/><a href="${REPO_URL}">${REPO_URL}</a></p>
+    <p class="tagline">POC : un serveur MCP (TypeScript) et un agent compatible OpenAI,
+    testables sans clé payante (modèle local Ollama ou serveur seul).</p>
+  </div>
+</div>`;
+
+const INSTALL_MD = `# Annexe A : Installation et utilisation
+
+## Prérequis
+- Node.js 20 ou plus récent, et npm.
+- Optionnel (pour la démo agent gratuite) : Ollama avec un modèle gérant le tool-calling, par exemple \`llama3.1\`.
+
+## Installation
+\`\`\`bash
+git clone ${REPO_URL}.git
+cd velora-mcp-copilote
+npm install
+cp .env.example .env        # profil Ollama local par défaut
+npm run db:setup            # base SQLite + données fictives Velora
+npm run build
+\`\`\`
+
+## Vérifier sans aucune clé
+\`\`\`bash
+npm test                    # 12 tests (outils MCP + boucle agent simulée)
+npm run showcase            # appels réels des outils -> docs/demo/outils-demo.md
+npm run inspect             # MCP Inspector sur http://localhost:6274
+\`\`\`
+
+## Lancer l'agent (copilote)
+\`\`\`bash
+# Option A, modèle local gratuit :
+ollama pull llama3.1
+npm run agent -- "Où en est la commande VEL-1003 ?"
+
+# Option B, OpenAI : renseigner le profil OpenAI dans .env, puis :
+npm run agent -- "Avez-vous la robe Lila en taille S ?"
+\`\`\`
+
+Le serveur MCP ne dépend d'aucun LLM : il se teste seul (\`npm test\`, Inspector) et
+se branche aussi sur Claude Desktop (un serveur, plusieurs clients).`;
+
+const RESSOURCES_MD = `# Annexe C : Ressources
+
+- Dépôt du POC (code complet) : ${REPO_URL}
+- Spécification et documentation MCP : https://modelcontextprotocol.io
+- SDK TypeScript MCP : https://github.com/modelcontextprotocol/typescript-sdk
+- Dépôt de référence des serveurs MCP : https://github.com/modelcontextprotocol/servers
+- Registre officiel de serveurs MCP : https://registry.modelcontextprotocol.io`;
+
+async function buildRenduHtml(): Promise<string> {
   const blocs = [
     "docs/rapport/01-cadrage.md",
     "docs/rapport/02-rnd-poc.md",
@@ -138,26 +248,26 @@ async function buildReportHtml(): Promise<string> {
     "docs/rapport/04-pedagogie.md",
     "docs/rapport/05-posture.md",
   ];
-  let body = `<div class="cover">
-    <h1>Learning Lab M2DFS : MCP (Model Context Protocol)</h1>
-    <div class="sub">Étude d'adoption : copilote conseiller de Velora (e-commerce fictif)</div>
-    <div class="meta">Rendu écrit : rapport + POC (dépôt GitHub)<br/>
-    POC : serveur MCP (TypeScript) + agent compatible OpenAI (cloud ou local)</div>
-  </div>`;
-  for (const b of blocs) {
-    body += (await marked.parse(await read(b))) as string;
-    body += '<div style="page-break-after:always"></div>';
-  }
-  return wrap("Rapport : MCP / Velora", body);
-}
 
-async function buildSimpleHtml(title: string, rels: string[]): Promise<string> {
-  let body = "";
-  for (let i = 0; i < rels.length; i++) {
-    body += (await marked.parse(stripFrontMatter(await read(rels[i])))) as string;
-    if (i < rels.length - 1) body += '<div style="page-break-after:always"></div>';
+  const sources: string[] = [];
+  for (const b of blocs) sources.push(stripFrontMatter(await read(b)));
+  sources.push(INSTALL_MD);
+
+  // Preuves d'exécution : on réutilise outils-demo.md en renommant son titre.
+  const preuves = (await read("docs/demo/outils-demo.md")).replace(
+    /^#[^\n]*\n/,
+    "# Annexe B : Preuves d'exécution (appels réels du serveur MCP)\n",
+  );
+  sources.push(preuves);
+  sources.push(RESSOURCES_MD);
+
+  let body = COVER + '<div class="pagebreak"></div>';
+  body += buildToc(sources) + '<div class="pagebreak"></div>';
+  for (let i = 0; i < sources.length; i++) {
+    body += (await marked.parse(sources[i])) as string;
+    if (i < sources.length - 1) body += '<div class="pagebreak"></div>';
   }
-  return wrap(title, body);
+  return wrap("Learning Lab MCP - Timéo GASTINEAU", body);
 }
 
 function findBrowser(): string | null {
@@ -203,40 +313,20 @@ async function main() {
   await rm(TMP_DIR, { recursive: true, force: true });
   await mkdir(TMP_DIR, { recursive: true });
 
-  const docs: Array<{ name: string; html: string }> = [
-    { name: "1-Rapport-MCP-Velora", html: await buildReportHtml() },
-    { name: "2-Guide-installation-POC", html: await buildSimpleHtml("Guide d'installation : POC", ["README.md"]) },
-    {
-      name: "3-Atelier-Coding-Kata",
-      html: await buildSimpleHtml("Atelier & Coding Kata", [
-        "docs/atelier/scenario.md",
-        "docs/atelier/kata.md",
-        "docs/atelier/kata-starter/README.md",
-      ]),
-    },
-    { name: "4-Preuves-execution", html: await buildSimpleHtml("Preuves d'exécution", ["docs/demo/outils-demo.md"]) },
-  ];
+  const html = await buildRenduHtml();
+  const htmlPath = path.join(TMP_DIR, OUT_NAME + ".html");
+  await writeFile(htmlPath, html, "utf8");
 
   const browser = findBrowser();
-  for (const d of docs) {
-    const htmlPath = path.join(TMP_DIR, d.name + ".html");
-    await writeFile(htmlPath, d.html, "utf8");
-    if (browser) {
-      const pdfPath = path.join(OUT_DIR, d.name + ".pdf");
-      await htmlToPdf(browser, htmlPath, pdfPath);
-      console.error("PDF :", pdfPath);
-    } else {
-      const htmlOut = path.join(OUT_DIR, d.name + ".html");
-      await writeFile(htmlOut, d.html, "utf8");
-      console.error("HTML (pas de navigateur trouvé, à imprimer) :", htmlOut);
-    }
-  }
-
-  if (!browser) {
-    console.error("\n⚠️ Aucun navigateur Chromium trouvé : HTML générés dans rendus/.");
-    console.error("   Ouvrez-les puis Imprimer → Enregistrer en PDF (ou définissez BROWSER_PDF).");
+  if (browser) {
+    const pdfPath = path.join(OUT_DIR, OUT_NAME + ".pdf");
+    await htmlToPdf(browser, htmlPath, pdfPath);
+    console.error("\n✅ Rendu PDF généré :", pdfPath);
   } else {
-    console.error("\n✅ Rendus PDF générés dans :", OUT_DIR);
+    const htmlOut = path.join(OUT_DIR, OUT_NAME + ".html");
+    await writeFile(htmlOut, html, "utf8");
+    console.error("\n⚠️ Aucun navigateur Chromium trouvé : HTML généré dans rendus/.");
+    console.error("   Ouvrez-le puis Imprimer → Enregistrer en PDF (ou définissez BROWSER_PDF).");
   }
 }
 

@@ -331,7 +331,25 @@ Zod</strong> (typage + descriptions lues par le LLM) et une <strong>annotation</
 statut <code>delivered</code> avant d&#39;écrire. Toute autre situation renvoie une erreur
 explicite, sans rien modifier. C&#39;est la traduction concrète du principe
 <em>human-in-the-loop</em> (cf. 2.12).</p>
-<h2>2.6 Du serveur MCP à l&#39;agent : le pont et la boucle tool-use</h2>
+<p>Concrètement, un outil tient en un schéma Zod (validé et décrit pour le LLM), une
+annotation de sûreté et un handler. Exemple (extrait de <code>src/tools/checkStock.ts</code>) :</p>
+<pre><code>server.registerTool(
+  "check_stock",
+  {
+    title: "Vérifier le stock",
+    description: "Vérifie la disponibilité d'un produit, globalement ou pour une taille.",
+    inputSchema: {
+      sku: z.string().describe("SKU exact du produit, ex: VEL-CHAUS-001"),
+      size: z.string().optional().describe("Taille précise, ex: 39, M, TU"),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false }, // outil en lecture seule
+  },
+  async ({ sku, size }) =&gt; {
+    const p = await findProductBySku(sku);
+    if (!p) return errorResult(`Aucun produit trouvé pour le SKU "${sku}".`);
+    // ... renvoie le stock (global, ou pour la taille demandée)
+  },
+);</code></pre><h2>2.6 Du serveur MCP à l&#39;agent : le pont et la boucle tool-use</h2>
 <p>L&#39;agent ne réimplémente pas les outils : il les <strong>réutilise</strong> via MCP. Le passage
 du protocole MCP au format attendu par un LLM compatible OpenAI tient en deux
 fonctions (<code>src/agent/bridge.ts</code>) :</p>
@@ -351,7 +369,24 @@ aplati en texte pour être réinjecté au modèle.</li>
 </ol>
 <p>Un <em>system prompt</em> <strong>anti-invention</strong> impose au modèle de s&#39;appuyer sur les outils
 pour toute donnée factuelle (prix, stock, statut) et de ne jamais inventer.</p>
-<h2>2.7 Choix techniques</h2>
+<p>Le cœur de la boucle (extrait de <code>src/agent/agent.ts</code>) :</p>
+<pre><code>for (let i = 0; i &lt; maxSteps; i++) {
+  const res = await llm.chat.completions.create({ model, messages, tools, tool_choice: "auto" });
+  const msg = res.choices[0].message;
+  messages.push(msg);
+
+  // Aucun outil demandé : le modèle a sa réponse finale
+  if (!msg.tool_calls?.length) return { answer: msg.content ?? "", steps };
+
+  // Sinon, on exécute chaque outil via le client MCP, puis on renvoie le résultat au modèle
+  for (const call of msg.tool_calls) {
+    const result = await client.callTool({
+      name: call.function.name,
+      arguments: JSON.parse(call.function.arguments),
+    });
+    messages.push({ role: "tool", tool_call_id: call.id, content: mcpResultToText(result) });
+  }
+}</code></pre><h2>2.7 Choix techniques</h2>
 <table>
 <thead>
 <tr>
