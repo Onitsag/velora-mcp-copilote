@@ -114,7 +114,7 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
   "statusLabel": "En préparation",
   "carrier": null,
   "trackingNumber": null,
-  "createdAt": "2026-06-22T09:30:20.132Z",
+  "createdAt": "2026-06-28T18:27:35.520Z",
   "customer": {
     "name": "Chloé Nguyen",
     "email": "chloe.nguyen@example.com"
@@ -150,14 +150,14 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
       "reference": "VEL-1001",
       "status": "delivered",
       "statusLabel": "Livrée",
-      "createdAt": "2026-06-22T09:30:20.085Z",
+      "createdAt": "2026-06-28T18:27:35.480Z",
       "itemsCount": 2
     },
     {
       "reference": "VEL-1005",
       "status": "returned",
       "statusLabel": "Retournée",
-      "createdAt": "2026-06-22T09:30:20.184Z",
+      "createdAt": "2026-06-28T18:27:35.558Z",
       "itemsCount": 1
     }
   ]
@@ -179,7 +179,7 @@ du client MCP vers le serveur Velora et les **résultats bruts** renvoyés.
 ```json
 {
   "message": "Demande de retour enregistrée (RMA créé).",
-  "rmaId": 2,
+  "rmaId": 12,
   "reference": "VEL-1001",
   "sku": "VEL-ROBE-001",
   "size": "M",

@@ -38,6 +38,8 @@ assemblée : [`docs/rapport/RAPPORT.md`](docs/rapport/RAPPORT.md).
 
 ## Installation (sans friction)
 ```bash
+git clone https://github.com/Onitsag/velora-mcp-copilote.git
+cd velora-mcp-copilote
 npm install
 cp .env.example .env        # profil "Ollama local" actif par défaut
 npm run db:setup            # crée la base SQLite + données fictives Velora

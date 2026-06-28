@@ -179,7 +179,7 @@ Cette note figure aussi dans le `README.md` et le fichier `.env.example`.
 
 ## 2.6 Dépôt et installation
 
-Dépôt : `https://github.com/<votre-compte>/velora-mcp-copilote` *(à compléter)*.
+Dépôt : `https://github.com/Onitsag/velora-mcp-copilote`.
 Guide complet d'installation **sans friction** dans le `README.md`. En résumé :
 
 ```bash
